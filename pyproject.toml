@@ -1,0 +1,20 @@
+[project]
+name = "k8s-aiagent"
+version = "0.1.0"
+description = "Kubernetes集群智能诊断Agent - 6层架构实现"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "langgraph",
+    "kubernetes",
+    "pydantic",
+    "python-dotenv",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["k8s_aiagent*"]
