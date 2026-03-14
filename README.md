@@ -73,7 +73,7 @@ python main.py "检查default命名空间中所有Pod的状态"
 
 ## 示例截图
 
-![Kubernetes智能诊断Agent示例](dist/example.png)
+![Kubernetes AI智能诊断Agent示例](./dist/example.png)
 
 ## 大模型集成
 
