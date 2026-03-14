@@ -1,6 +1,6 @@
-# Kubernetes AI智能诊断Agent (LangGraph)
+# Kubernetes AI智能诊断Agent (LangGraph + LLM)
 
-这是一个基于大模型(LLM)驱动的Kubernetes集群智能诊断AI Agent，使用LangGraph框架构建状态机，能够理解自然语言输入并自动执行针对性的故障排查。通过集成多种大模型提供商（Anthropic、OpenAI、Qwen等），提供智能化的诊断分析和解决方案建议。
+这是一个基于大模型(LLM)驱动的Kubernetes集群智能诊断AI Agent，使用LangGraph框架构建状态机工作流，能够理解自然语言输入并自动执行针对性的故障排查。通过集成多种大模型提供商（Anthropic、OpenAI、Qwen等），提供智能化的诊断分析和解决方案建议。
 
 ## LangGraph架构设计
 
@@ -26,8 +26,10 @@ pip install -e .
 # 复制配置文件
 cp .env.example .env
 
-# 配置大模型（可选但推荐）
-# 编辑 .env 文件，设置 LLM_PROVIDER、LLM_API_URL、LLM_API_KEY 等参数
+# 配置参数说明
+# 1. Kubernetes配置: KUBECONFIG (默认: ~/.kube/config)
+# 2. 大模型配置: LLM_PROVIDER、LLM_API_URL、LLM_API_KEY 等参数
+# 3. 诊断配置: MAX_DIAGNOSTIC_STEPS、ENABLE_LOG_ANALYSIS 等参数
 # 支持的提供商：anthropic, openai, google, azure, deepseek, minimax, qwen
 
 # 使用示例
@@ -50,7 +52,12 @@ python main.py "检查default命名空间中所有Pod的状态"
 
 ![Kubernetes AI智能诊断Agent示例](./docs/example.png)
 
-## 大模型集成
+## 配置说明
+
+### Kubernetes配置
+- `KUBECONFIG`: kubeconfig文件路径 (默认: ~/.kube/config)
+
+### 大模型集成
 
 本AI Agent支持多种大模型提供商，通过统一的配置接口进行集成：
 
@@ -67,10 +74,17 @@ python main.py "检查default命名空间中所有Pod的状态"
 - `LLM_PROVIDER`: 模型提供商 (默认: anthropic)
 - `LLM_API_URL`: API端点URL (可选，会根据提供商自动设置)
 - `LLM_API_KEY`: API密钥
+- `LLM_PROTOCOL`: 通信协议 (rest 或 grpc，默认: rest)
 - `LLM_API_FORMAT`: API格式 (anthropic 或 openai)
 - `LLM_MODEL`: 具体模型名称
 - `LLM_TEMPERATURE`: 生成温度 (默认: 0.7)
 - `LLM_MAX_TOKENS`: 最大输出token数 (默认: 4096)
+- `LLM_TIMEOUT`: API请求超时秒数 (默认: 60)
+
+### 诊断配置
+- `MAX_DIAGNOSTIC_STEPS`: 最大诊断步骤数 (默认: 10)
+- `ENABLE_LOG_ANALYSIS`: 启用日志分析 (默认: true)
+- `ENABLE_EVENT_ANALYSIS`: 启用事件分析 (默认: true)
 
 ### 智能分析功能
 - **事件分析**: 自动分析Kubernetes事件并提供根本原因
