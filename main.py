@@ -1,7 +1,7 @@
 import os
 import sys
 import logging
-from src.core.executor import DiagnosticExecutor
+from k8s_diagnostic_agent import run_diagnostic
 
 # 配置日志
 logging.basicConfig(
@@ -11,7 +11,7 @@ logging.basicConfig(
 
 def main():
     """主函数"""
-    print("Kubernetes集群智能诊断Agent (6层架构)")
+    print("Kubernetes AI智能诊断Agent (LangGraph)")
     print("=" * 50)
     
     # 获取用户输入
@@ -27,8 +27,7 @@ def main():
     print("-" * 50)
     
     try:
-        executor = DiagnosticExecutor()
-        result = executor.execute_diagnostic(user_input)
+        result = run_diagnostic(user_input)
         print("\n诊断结果:")
         print("=" * 50)
         print(result)

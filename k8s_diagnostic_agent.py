@@ -4,7 +4,8 @@ from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 import logging
 import os
-from config import KUBECONFIG_PATH, DEBUG_MODE, TIMEOUT_SECONDS
+from config.config import KUBECONFIG_PATH, DEBUG_MODE, TIMEOUT_SECONDS
+from utils.llm_client import LLMClient
 
 # 配置日志
 logging.basicConfig(level=logging.DEBUG if DEBUG_MODE else logging.INFO)
@@ -20,6 +21,8 @@ class DiagnosticState(TypedDict):
     diagnostic_steps: List[str]
     final_diagnosis: str
     error: Optional[str]
+    # 大模型相关
+    llm_enabled: bool
 
 def initialize_k8s_client():
     """初始化Kubernetes客户端"""
@@ -235,6 +238,35 @@ def generate_diagnosis(state: DiagnosticState) -> DiagnosticState:
         state["final_diagnosis"] = f"诊断失败: {state['error']}"
         return state
     
+    # 检查大模型是否可用
+    try:
+        llm_client = LLMClient()
+        state["llm_enabled"] = llm_client.enabled
+    except Exception as e:
+        logger.warning(f"大模型初始化失败: {e}")
+        state["llm_enabled"] = False
+    
+    # 如果大模型可用，使用大模型生成智能报告
+    if state["llm_enabled"]:
+        try:
+            # 收集所有相关信息用于大模型分析
+            findings_data = {
+                "user_input": state["user_input"],
+                "cluster_status": state["cluster_status"],
+                "node_issues": state["node_issues"],
+                "pod_issues": state["pod_issues"],
+                "service_issues": state["service_issues"],
+                "diagnostic_steps": state["diagnostic_steps"]
+            }
+            
+            # 使用大模型生成综合诊断报告
+            report = llm_client.generate_diagnostic_report(findings_data)
+            state["final_diagnosis"] = report
+            return state
+        except Exception as e:
+            logger.warning(f"大模型生成报告失败，回退到规则引擎: {e}")
+    
+    # 回退到规则引擎
     issues_found = []
     
     # 节点问题
@@ -314,7 +346,8 @@ def run_diagnostic(user_input: str) -> str:
         service_issues=[],
         diagnostic_steps=[],
         final_diagnosis="",
-        error=None
+        error=None,
+        llm_enabled=False
     )
     
     graph = create_diagnostic_graph()

@@ -2,7 +2,7 @@ import os
 import json
 import requests
 from typing import Dict, Any, Optional
-from src.config.config import (
+from config.config import (
     LLM_API_URL, LLM_API_KEY, LLM_PROTOCOL, LLM_API_FORMAT,
     LLM_MODEL, LLM_BASE_URL, LLM_TEMPERATURE, LLM_MAX_TOKENS, LLM_TIMEOUT
 )
